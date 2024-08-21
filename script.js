@@ -25,6 +25,138 @@ async function initializeGame() {
     loadLevel(1); // Start with level 1
 }
 
+// Add this new function
+function addControlButtons() {
+    const controlsContainer = document.createElement('div');
+    controlsContainer.id = 'controls-container';
+
+    const arrowButtonsContainer = document.createElement('div');
+    arrowButtonsContainer.classList.add('arrow-buttons-container');
+
+    const directions = [
+        [null, 'up', null],
+        ['left', 'down', 'right']
+    ];
+
+    directions.forEach((row, rowIndex) => {
+        row.forEach((direction, colIndex) => {
+            if (direction) {
+                const button = document.createElement('button');
+                button.classList.add('control-button', 'arrow-button');
+                button.textContent = getArrowSymbol(direction);
+                button.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    if (!isLevelCompleted) {
+                        moveLetters(direction);
+                    } else {
+                        console.log('Level completed. No action taken.');
+                    }
+                });
+                arrowButtonsContainer.appendChild(button);
+            }
+        });
+    });
+
+    const clearButton = document.createElement('button');
+    clearButton.classList.add('control-button', 'clear-button');
+    clearButton.textContent = 'Clear';
+    clearButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        if (!isLevelCompleted) {
+            handleEscape();
+        } else {
+            console.log('Level completed. No action taken.');
+        }
+    });
+
+    controlsContainer.appendChild(arrowButtonsContainer);
+    controlsContainer.appendChild(clearButton);
+
+    const gameContainer = document.getElementById('game-container');
+    gameContainer.insertBefore(controlsContainer, gameGrid);
+}
+
+// Helper function to get arrow symbols
+function getArrowSymbol(direction) {
+    switch (direction) {
+        case 'up': return '↑';
+        case 'left': return '←';
+        case 'down': return '↓';
+        case 'right': return '→';
+    }
+}
+
+// Modify the loadLevel function to recreate the control buttons
+function loadLevel(levelNumber) {
+    // Remove the continue button if it exists
+    const continueButton = document.getElementById('continue-button');
+    if (continueButton) {
+        continueButton.remove();
+    }
+
+    // Remove the reset button if it exists
+    const resetButton = document.getElementById('reset-button');
+    if (resetButton) {
+        resetButton.remove();
+    }
+
+    // Clear selection and reset variables
+    clearSelection();
+
+    // Load the new level data
+    currentLevel = levels[levelNumber.toString()];
+    if (!currentLevel) {
+        console.error(`Level ${levelNumber} not found!`);
+        return;
+    }
+
+    words = currentLevel.words || []; // Use an empty array if words are not defined
+
+    // Clear the game grid and word list
+    gameGrid.innerHTML = '';
+    document.getElementById('word-list').innerHTML = '';
+
+    // Set up the new level
+    gameGrid.style.gridTemplateColumns = `repeat(${currentLevel.width}, 1fr)`;
+
+    currentLevel.letters.forEach((row, rowIndex) => {
+        row.forEach((letter, colIndex) => {
+            const letterElement = document.createElement('div');
+            letterElement.classList.add('letter');
+            letterElement.textContent = letter;
+            letterElement.dataset.row = rowIndex;
+            letterElement.dataset.col = colIndex;
+            letterElement.addEventListener('click', () => selectLetter(letterElement, rowIndex, colIndex));
+            gameGrid.appendChild(letterElement);
+        });
+    });
+
+    if (words.length > 0) {
+        displayWords(words);
+        updateWordList();
+    } else {
+        console.log('No words defined for this level');
+        // You might want to display a message to the user or handle this case differently
+    }
+
+    // Add the reset button after setting up the level
+    addResetButton();
+
+    // Update the current level
+    document.body.dataset.currentLevel = levelNumber.toString();
+
+    isLevelCompleted = false;
+
+    // Remove existing control buttons if any
+    const existingControls = document.getElementById('controls-container');
+    if (existingControls) {
+        existingControls.remove();
+    }
+
+    // Recreate control buttons
+    addControlButtons();
+}
+
 function displayWords(words) {
     const wordList = document.getElementById('word-list');
     wordList.innerHTML = ''; // Clear any existing content
@@ -362,67 +494,6 @@ function getCurrentLevel() {
     // This assumes you're storing the current level somewhere
     // You might need to adjust this based on how you're tracking the current level
     return document.body.dataset.currentLevel || "1";
-}
-
-function loadLevel(levelNumber) {
-    // Remove the continue button if it exists
-    const continueButton = document.getElementById('continue-button');
-    if (continueButton) {
-        continueButton.remove();
-    }
-
-    // Remove the reset button if it exists
-    const resetButton = document.getElementById('reset-button');
-    if (resetButton) {
-        resetButton.remove();
-    }
-
-    // Clear selection and reset variables
-    clearSelection();
-
-    // Load the new level data
-    currentLevel = levels[levelNumber.toString()];
-    if (!currentLevel) {
-        console.error(`Level ${levelNumber} not found!`);
-        return;
-    }
-
-    words = currentLevel.words || []; // Use an empty array if words are not defined
-
-    // Clear the game grid and word list
-    gameGrid.innerHTML = '';
-    document.getElementById('word-list').innerHTML = '';
-
-    // Set up the new level
-    gameGrid.style.gridTemplateColumns = `repeat(${currentLevel.width}, 1fr)`;
-
-    currentLevel.letters.forEach((row, rowIndex) => {
-        row.forEach((letter, colIndex) => {
-            const letterElement = document.createElement('div');
-            letterElement.classList.add('letter');
-            letterElement.textContent = letter;
-            letterElement.dataset.row = rowIndex;
-            letterElement.dataset.col = colIndex;
-            letterElement.addEventListener('click', () => selectLetter(letterElement, rowIndex, colIndex));
-            gameGrid.appendChild(letterElement);
-        });
-    });
-
-    if (words.length > 0) {
-        displayWords(words);
-        updateWordList();
-    } else {
-        console.log('No words defined for this level');
-        // You might want to display a message to the user or handle this case differently
-    }
-
-    // Add the reset button after setting up the level
-    addResetButton();
-
-    // Update the current level
-    document.body.dataset.currentLevel = levelNumber.toString();
-
-    isLevelCompleted = false;
 }
 
 function markWordAsCompleted(word) {
