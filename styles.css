@@ -1,0 +1,57 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: black;
+}
+
+#game-grid {
+    display: grid;
+    gap: 5px;
+}
+
+.letter {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    font-size: 18px;
+    user-select: none;
+}
+
+.letter.selected {
+    background-color: #ffff00;
+}
+
+.letter.completed {
+    background-color: #90EE90; /* Light green */
+    color: #006400; /* Dark green */
+}
+
+#word-list {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.word-item {
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: monospace;
+}
+
+.word-item.completed {
+    text-decoration: line-through;
+    color: #888;
+}
