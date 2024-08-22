@@ -2,20 +2,29 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
     font-family: Arial, sans-serif;
     background-color: black;
 }
 
+#game-container {
+    width: 100%;
+    max-width: 500px; /* Adjust this value as needed */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
 #game-grid {
     display: grid;
     gap: 5px;
+    width: 100%;
+    align-items: center;
 }
 
 .letter {
-    width: 40px;
-    height: 40px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -71,10 +80,12 @@ body {
 
 .arrow-button {
     background-color: #c1c1c1;
+    margin: 0px 0px;
 }
 
 .clear-button {
     background-color: #b1eeea;
+    margin-bottom: 10px;
 }
 
 
@@ -84,6 +95,7 @@ body {
     align-items: flex-end;
     margin-bottom: 10px;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .arrow-buttons-container {
@@ -91,6 +103,7 @@ body {
     grid-template-columns: repeat(3, auto);
     grid-template-rows: auto auto;
     gap: 5px;
+    margin-bottom: 10px;
 }
 
 .arrow-button {
@@ -138,4 +151,24 @@ body {
 
 .control-button:hover {
     background-color: #45a049;
+}
+
+@media (max-width: 480px) {
+    .letter {
+        font-size: 16px;
+    }
+
+    .control-button {
+        font-size: 14px;
+    }
+
+    .arrow-button {
+        width: 35px;
+        height: 35px;
+    }
+
+    .clear-button {
+        width: 70px;
+        height: 35px;
+    }
 }
